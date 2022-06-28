@@ -12,7 +12,18 @@ It provides:
  The functions of the package have become very complex over the years. Given that I don't know how much it will be utilized by others, I refrain from providing a detailed documentation (would be just to time consuming). However, I tried to provide an comprehensive documentation of the code itself. If you have any questions, don't hesitate to approach me (either per DM or opening issues here on github.)
 
 ### Usage
-I
+You can simply download the package and import it, if the download directory is in your Python path. Another option is to install the package from source using pip:
+
+```bash
+pip install git+https://github.com/JonasKemmer/JulietMods.git
+```
+or if you're planning to modify it
+If you want to download the directory to a local path:
+```bash
+git clone https://github.com/JonasKemmer/JulietMods.git
+cd AliasFinder
+python setup.py develop
+```
 
 ### Disclaimer:
 The package was originally created for my own workflow, so there is no guarantee for correctness. I am happy for any bug reports, however it is unlikely that I will actively develop the package in the near future.
