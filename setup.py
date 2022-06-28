@@ -15,8 +15,7 @@ setup(
     url="https://github.com/JonasKemmer/JulietMods",
     packages=setuptools.find_packages(),
     install_requires=[
-        'numpy', 'matplotlib', 'corner', 'pandas', 'seaborn', 'astropy',
-        'warnings', 'copy', 'math'
+        'numpy', 'matplotlib', 'corner', 'pandas', 'seaborn', 'astropy'
     ],
     python_requires='>=3.6',
 )

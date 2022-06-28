@@ -30,6 +30,23 @@ The package was originally created for my own workflow, so there is no guarantee
 
 **BUT the package is deliberately published with an open source licence. If you're an active juliet user, fork it, modify it to your liking and share it :)**
 
+## Example file for an existing juliet fit:
+```python
+import juliet
+import juliet_mods as jm
+
+julobj = juliet.load(input_folder='/path/to/juliet_out/')
+results = julobj.fit(
+        sampler='dynamic_dynesty',
+        nthreads=5,
+    )
+jm.append_lnZ(results)
+jm.plot_rv(results)
+jm.plot_phased_rvs(results, show=True, saveformat='png')
+jm.plot_parameter_correlation(results, 'P_vs_K', 'p1')
+```
+
+
 ## Example file of a joint RV and transit fit:
 ```python
 import juliet
