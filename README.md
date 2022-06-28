@@ -21,7 +21,7 @@ or if you're planning to modify it
 If you want to download the directory to a local path:
 ```bash
 git clone https://github.com/JonasKemmer/JulietMods.git
-cd AliasFinder
+cd JulietMods
 python setup.py develop
 ```
 
