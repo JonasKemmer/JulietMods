@@ -288,6 +288,16 @@ def plot_phased_rvs(results,
     """
     global colors
     instruments = sorted(list(results.data.data_rv.keys()))
+    if show_binned:
+        marker = '.'
+        alpha = 0.8
+        edgecolor = None
+
+    else:
+        marker = 'o'
+        alpha = 1
+        edgecolor = 'black'
+
     for pnum in range(1, results.data.n_rv_planets + 1):
         P, t0 = utils.get_period_and_t0(results, pnum)
 
@@ -384,44 +394,46 @@ def plot_phased_rvs(results,
                         results.data.data_rv[instrument] - model_other_p,
                         yerr=np.sqrt(results.data.errors_rv[instrument]**2 +
                                      jitter**2),
-                        fmt='o',
+                        fmt=marker,
                         color=color,
-                        markeredgecolor='black',
+                        alpha=alpha,
+                        markeredgecolor=edgecolor,
                         zorder=5)
             res.errorbar(data_phases,
                          results.data.data_rv[instrument] - model_rv,
                          yerr=np.sqrt(results.data.errors_rv[instrument]**2 +
                                       jitter**2),
-                         fmt='o',
+                         fmt=marker,
                          color=color,
-                         markeredgecolor='black',
+                         alpha=alpha,
+                         markeredgecolor=edgecolor,
                          zorder=5)
 
-        if show_binned:
-            binned_data = utils.bin_phased_data(
-                data_phases, results.data.data_rv[instrument] - model_other_p,
-                binlength)
-            binned_model = utils.bin_phased_data(data_phases,
-                                                 model_rv - model_other_p,
-                                                 binlength)
-            ax.errorbar(binned_data['phases'],
-                        binned_data['values'],
-                        yerr=binned_data['errors'],
-                        fmt='s',
-                        markersize=7,
-                        markeredgecolor='black',
-                        markerfacecolor="black",
-                        ecolor='black',
-                        zorder=6)
-            res.errorbar(binned_data['phases'],
-                         binned_data['values'] - binned_model['values'],
-                         yerr=binned_data['errors'],
-                         fmt='s',
-                         markersize=8,
-                         markeredgecolor='black',
-                         markerfacecolor="black",
-                         ecolor='black',
-                         zorder=7)
+            if show_binned:
+                binned_data = utils.bin_phased_data(
+                    data_phases,
+                    results.data.data_rv[instrument] - model_other_p, binlength)
+                binned_model = utils.bin_phased_data(data_phases,
+                                                     model_rv - model_other_p,
+                                                     binlength)
+                ax.errorbar(binned_data['phases'],
+                            binned_data['values'],
+                            yerr=binned_data['errors'],
+                            fmt='s',
+                            markersize=6,
+                            markeredgecolor='black',
+                            markerfacecolor='None',
+                            ecolor='black',
+                            zorder=6)
+                res.errorbar(binned_data['phases'],
+                             binned_data['values'] - binned_model['values'],
+                             yerr=binned_data['errors'],
+                             fmt='s',
+                             markersize=6,
+                             markeredgecolor='black',
+                             markerfacecolor='None',
+                             ecolor='black',
+                             zorder=7)
 
         ax.set_ylim(-3 * np.std(results.data.y_rv),
                     3 * np.std(results.data.y_rv))
