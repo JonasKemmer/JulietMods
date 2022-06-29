@@ -161,13 +161,14 @@ def plot_photometry_indv_panels(results,
 
         fig.tight_layout()
         fig.subplots_adjust(hspace=0)
-        if show:
-            plt.show()
         fig.savefig(
             f'{results.data.out_folder}/{instrument}_photometry_plot.{saveformat}',
             dpi=400,
             bbox_inches='tight')
-        plt.close(fig)
+        if show:
+            plt.show()
+        else:
+            plt.close(fig)
 
 
 def plot_photometry_with_shared_parameters(results,
@@ -324,13 +325,14 @@ def plot_photometry_with_shared_parameters(results,
 
     fig.tight_layout()
     fig.subplots_adjust(hspace=0)
-    if show:
-        plt.show()
     fig.savefig(
         f'{results.data.out_folder}/{"_".join(instruments)}_photometry_plot.{saveformat}',
         dpi=400,
         bbox_inches='tight')
-    plt.close(fig)
+    if show:
+        plt.show()
+    else:
+        plt.close(fig)
 
 
 def plot_photometry(results,
@@ -482,9 +484,10 @@ def plot_photometry(results,
 
     fig.tight_layout()
     fig.subplots_adjust(hspace=0)
-    if show:
-        plt.show()
     fig.savefig(f'{results.data.out_folder}/full_photometry_plot.{saveformat}',
                 dpi=400,
                 bbox_inches='tight')
-    # plt.close(fig)
+    if show:
+        plt.show()
+    else:
+        plt.close(fig)

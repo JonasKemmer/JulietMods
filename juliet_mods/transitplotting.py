@@ -231,13 +231,14 @@ def plot_lc_indv_panels(results,
 
         fig.tight_layout()
         fig.subplots_adjust(hspace=0)
-        if show:
-            plt.show()
         fig.savefig(
             f'{results.data.out_folder}/full_lc_plot_{instrument}.{saveformat}',
             dpi=400,
             bbox_inches='tight')
-        plt.close(fig)
+        if show:
+            plt.show()
+        else:
+            plt.close(fig)
 
 
 def _plot_phased_lc_(fig,
@@ -358,11 +359,37 @@ def _plot_phased_lc_(fig,
 def plot_phased_lcs(results,
                     minphase=-0.5,
                     maxphase=0.5,
+                    yrange_quantile=[0.05, 0.95],
                     nsamples=1000,
                     show_binned=True,
                     binlength=0.005,
                     show=False,
                     saveformat='pdf'):
+    """Plots the phased light curves.
+
+    Parameters
+    ----------
+    results : object
+        Output from a juliet fit that contains all neccesary data.
+    minphase : float, optional
+        Lower limit of x-axis, by default -0.5
+    maxphase : float, optional
+        Upper limit of a-axis, by default 0.5
+    yrange_quantile : array_like
+        Quantiles of the data to show on the yrange.
+    nsamples : int, optional
+        Number of models which are drawn from the posterior to derive
+        the confidence intervals, by default 1000
+    show_binned : bool, optional
+        Whether to overlay binned datapoints.
+        Errorbars are the standart deviation of the data bins, by default True
+    binlength : str, optional
+        Span of the phase-bins, by default 0.005
+    show : bool, optional
+        Whether the plot is shown after the function call, by default False
+    saveformat : str, optional
+        Saveformat passed to plt.savefig, by default 'pdf'
+    """
     for instrument in sorted(list(results.data.data_lc.keys())):
         for pnum in range(1, results.data.n_transiting_planets + 1):
             fig, (ax, res) = plt.subplots(2,
@@ -387,18 +414,21 @@ def plot_phased_lcs(results,
                 show_binned=show_binned,
                 binlength=binlength,
             )
-
+            lcmin, lcmax = np.quantile(results.data.y_lc, yrange_quantile)
+            ax.set_ylim(lcmin, lcmax)
+            res.set_ylim(1 - lcmax, 1 - lcmin)
             ax.set_title(f'{instrument}')
             fig.tight_layout()
             fig.subplots_adjust(hspace=0)
-            if show:
-                plt.show()
             fig.savefig(
                 f'{results.data.out_folder}/{instrument}_p{pnum}_phased_lcplot.'
                 f'{saveformat}',
                 dpi=400,
                 bbox_inches='tight')
-            plt.close(fig)
+            if show:
+                plt.show()
+            else:
+                plt.close(fig)
 
 
 def plot_transit_overview(results,
@@ -406,6 +436,7 @@ def plot_transit_overview(results,
                           ncols=3,
                           minphase=-0.5,
                           maxphase=0.5,
+                          yrange_quantile=[0.05, 0.95],
                           nsamples=1000,
                           show_binned=True,
                           binlength=0.005,
@@ -429,6 +460,8 @@ def plot_transit_overview(results,
         Lower limit of x-axis, by default -0.5
     maxphase : float, optional
         Upper limit of a-axis, by default 0.5
+    yrange_quantile : array_like
+        Quantiles of the data to show on the yrange.
     nsamples : int, optional
         Number of models which are drawn from the posterior to derive
         the confidence intervals, by default 1000
@@ -446,7 +479,6 @@ def plot_transit_overview(results,
         Saveformat passed to plt.savefig, by default 'png' to
         optimise the load time in a pdf by rasterizing.
     """
-    lcmin, lcmax = np.quantile(results.data.y_lc, [0.05, 0.95])
 
     instruments = []
     dates = []
@@ -482,7 +514,8 @@ def plot_transit_overview(results,
             show_binned=show_binned,
             binlength=binlength,
         )
-
+        midpoint = np.median(results.data.times_lc[instrument])
+        date = pd.to_datetime(midpoint, origin='julian', unit='D')
         if 'TESS' in instrument:
             try:
                 sector = instrument.split('-')[1][1:]
@@ -493,23 +526,24 @@ def plot_transit_overview(results,
 
         elif 'OSN' in instrument:
             instr_str = '-'.join(instrument.split('-')[:-2])
-            midpoint = np.median(results.data.times_lc[instrument])
-            date = pd.to_datetime(midpoint, origin='julian', unit='D')
             label = f'{instr_str} \n {date:%d %b, %Y}'
 
         elif len(instrument.split('-')) == 3:
             instr_str = instrument.split('-')[0]
             filt = instrument.split('-')[-2]
-            midpoint = np.median(results.data.times_lc[instrument])
-            date = pd.to_datetime(midpoint, origin='julian', unit='D')
             label = f'{instr_str}$_{{{filt}}}$ \n {date:%d %b, %Y}'
 
         else:
-            instr_str = '-'.join(instrument.split('-')[:-2])
-            filt = instrument.split('-')[-2]
-            midpoint = np.median(results.data.times_lc[instrument])
-            date = pd.to_datetime(midpoint, origin='julian', unit='D')
-            label = f'{instr_str}$_{{{filt}}}$ \n {date:%d %b, %Y}'
+            try:
+                instr_str = '-'.join(instrument.split('-')[:-2])
+                filt = instrument.split('-')[-2]
+                label = f'{instr_str}$_{{{filt}}}$ \n {date:%d %b, %Y}'
+            except IndexError:
+                print('Cannot read instrument information. '
+                      'TESS data should be named: "TESS-{sector}", '
+                      'other instruments like: {instrument}-{filt}-{date}. '
+                      'Falling back to the plain instrument name.')
+                label = f'{instrument} \n {date:%d %b, %Y}'
 
         if labelpos.lower() == "title":
             ax.set_title(label, fontsize='small')
@@ -525,7 +559,7 @@ def plot_transit_overview(results,
                         zorder=11)
         else:
             raise KeyError('"labelpos" must be either "title" or "annotation"')
-
+        lcmin, lcmax = np.quantile(results.data.y_lc, yrange_quantile)
         ax.set_ylim(lcmin, lcmax)
         res.set_ylim(1 - lcmax, 1 - lcmin)
         res.set_xlim(minphase, maxphase)
@@ -557,9 +591,11 @@ def plot_transit_overview(results,
             ax.set_xlabel('Phase')
     fig.tight_layout()
     fig.subplots_adjust(wspace=0.06, hspace=0.4)
-    if show:
-        plt.show()
     fig.savefig(
         f'{results.data.out_folder}/transit_overview_p{pnum}.{saveformat}',
         dpi=500,
         bbox_inches='tight')
+    if show:
+        plt.show()
+    else:
+        plt.close(fig)

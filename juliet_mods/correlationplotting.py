@@ -194,9 +194,6 @@ def plot_GPcorrelation(results,
 
     cb = fig.colorbar(inner, cax=axins, orientation="horizontal")
     cb.set_label(r'$\ln\; \mathcal{L}$')
-    # plt.tight_layout()
-    if show:
-        plt.show()
     if type(model) == list:
         name_post_script = '_vs_'.join(model)
     else:
@@ -205,6 +202,10 @@ def plot_GPcorrelation(results,
                      f'GP-{correlation}_{name_post_script}.{saveformat}'),
                 bbox_inches='tight',
                 dpi=400)
+    if show:
+        plt.show()
+    else:
+        plt.close(fig)
 
 
 def plot_corner(results,
@@ -287,7 +288,8 @@ def plot_corner(results,
                 dpi=400)
     if show:
         plt.show()
-    plt.close()
+    else:
+        plt.close()
 
 
 def plot_parameter_correlation(results,
@@ -430,9 +432,10 @@ def plot_parameter_correlation(results,
 
     cb = fig.colorbar(inner, cax=axins, orientation="horizontal")
     cb.set_label(r'$\ln\; \mathcal{L}$')
-    # plt.tight_layout()
-    if show:
-        plt.show()
     fig.savefig(Path(results.data.out_folder, f'{correlation}.{saveformat}'),
                 bbox_inches='tight',
                 dpi=400)
+    if show:
+        plt.show()
+    else:
+        plt.close(fig)

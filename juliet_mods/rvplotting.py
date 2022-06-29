@@ -225,21 +225,22 @@ def plot_rv(results,
                      color=color,
                      markeredgecolor='black',
                      zorder=5)
-    ax.set_ylim(
-        np.mean(results.data.y_rv) - 3 * np.std(results.data.y_rv),
-        np.mean(results.data.y_rv) + 3 * np.std(results.data.y_rv))
+    ax.set_ylim(-3 * np.std(results.data.y_rv), 3 * np.std(results.data.y_rv))
+    # np.mean(results.data.y_rv) - 3 * np.std(results.data.y_rv),
+    # np.mean(results.data.y_rv) + 3 * np.std(results.data.y_rv))
 
     if not external_legend:
         ax.legend(handles=legend_elements, loc='best', ncol=3)
 
     fig.tight_layout()
     fig.subplots_adjust(hspace=0)
-    if show:
-        plt.show()
     fig.savefig(f'{results.data.out_folder}/rvs_vs_time_broad.{saveformat}',
                 dpi=400,
                 bbox_inches='tight')
-    plt.close(fig)
+    if show:
+        plt.show()
+    else:
+        plt.close(fig)
 
     if external_legend:
         fig, ax = plt.subplots(figsize=(6, 0.4))
@@ -422,20 +423,23 @@ def plot_phased_rvs(results,
                          ecolor='black',
                          zorder=7)
 
-        ax.set_ylim(-3 * np.std(results.data.y_rv - rv_offset),
-                    +3 * np.std(results.data.y_rv - rv_offset))
+        ax.set_ylim(-3 * np.std(results.data.y_rv),
+                    3 * np.std(results.data.y_rv))
+        # ax.set_ylim(-3 * np.std(results.data.y_rv - rv_offset),
+        #             +3 * np.std(results.data.y_rv - rv_offset))
         ax.set_xlim(-0.52, 0.52)
         if not external_legend:
             ax.legend(handles=legend_elements, loc='best', ncol=3)
         fig.tight_layout()
         fig.subplots_adjust(hspace=0)
-        if show:
-            plt.show()
         fig.savefig(
             f'{results.data.out_folder}/Phased_RV_P{pnum}_{P:.0f}d.{saveformat}',
             dpi=400,
             bbox_inches='tight')
-        plt.close(fig)
+        if show:
+            plt.show()
+        else:
+            plt.close(fig)
 
     if external_legend:
         fig, ax = plt.subplots(figsize=(6, 0.4))
@@ -549,10 +553,11 @@ def plot_rv_indv_panels(results,
                             zorder=0)
         fig.tight_layout()
         fig.subplots_adjust(hspace=0)
-        if show:
-            plt.show()
         fig.savefig(
             f'{results.data.out_folder}/full_rv_plot_{instrument}.{saveformat}',
             dpi=400,
             bbox_inches='tight')
-        plt.close(fig)
+        if show:
+            plt.show()
+        else:
+            plt.close(fig)
