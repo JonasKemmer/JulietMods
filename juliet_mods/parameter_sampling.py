@@ -550,12 +550,15 @@ def create_planet_param_table(results,
                 'tablefoot':
                     r'\tablefoot{\tablefoottext{a}{Error bars denote the $68\%$ '
                     r'posterior credibility intervals.}}'
-            })
+            },
+            overwrite=True)
+        tab.to_pandas()
     elif saveformat == 'html':
         tab = tab.to_pandas()
         tab.to_html(f'{results.data.out_folder}/pparameter.html')
     else:
         raise KeyError('Saveformat must be either "LaTeX" or "html"')
+    return tab
 
 
 def create_planet_posterior_table(results):
