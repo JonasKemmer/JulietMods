@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 import pandas as pd
-
+import juliet
 import juliet_mods.utils as utils
 
 __author__ = "Jonas Kemmer @ ZAH, Landessternwarte Heidelberg"
@@ -63,13 +63,23 @@ class Data(object):
         self._global_gp_rvs = True
 
     def _read_tab(self, path, instrument, columns):
-        try:
-            tab = pd.read_table(path, sep="\s+|,|;", header=None)
-        except Exception:
-            tab = pd.read_fwf(path, header=None)
-        tab = tab.rename(columns=columns)
-        if instrument is not None:
-            tab['instr'] = instrument
+        if "http" in path or "www" in path:
+            times, fluxes, flux_err = juliet.get_TESS_data(path)
+            tab = pd.DataFrame(np.array([times + 2457000, fluxes, flux_err]).T,
+                               columns=['times', 'yval', 'yval_err'])
+            tab = tab.round(6)
+            if instrument is not None:
+                tab['instr'] = instrument
+            else:
+                tab['instr'] = 'TESS'
+        else:
+            try:
+                tab = pd.read_table(path, sep="\s+|,|;", header=None)
+            except Exception:
+                tab = pd.read_fwf(path, header=None)
+            tab = tab.rename(columns=columns)
+            if instrument is not None:
+                tab['instr'] = instrument
         return tab
 
     def add_photometry(self,
