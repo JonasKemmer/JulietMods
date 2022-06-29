@@ -12,18 +12,25 @@ It provides:
  The functions of the package have become very complex over the years. Given that I don't know how much it will be utilized by others, I refrain from providing a detailed documentation (would be just to time consuming). However, I tried to provide an comprehensive documentation of the code itself. If you have any questions, don't hesitate to approach me (either per DM or opening issues here on github.)
 
 ### Usage
-You can simply download the package and import it, if the download directory is in your Python path. Another option is to install the package from source using pip:
+You can simply download the package and import it, if the download directory is in your Python path. I would reccoment to clone the repository to a local directory and install the package from source:
 
-```bash
-pip install git+https://github.com/JonasKemmer/JulietMods.git
-```
-or if you're planning to modify it
-If you want to download the directory to a local path:
 ```bash
 git clone https://github.com/JonasKemmer/JulietMods.git
 cd JulietMods
 python setup.py develop
 ```
+In this way you can modify the package to your liking and synchronize quickly with the latest version from github using:
+```bash
+git pull
+```
+in the directory of the package.
+
+If you want to install it using pip, you can use:
+
+```bash
+pip install git+https://github.com/JonasKemmer/JulietMods.git
+```
+
 
 ### Disclaimer:
 The package was originally created for my own workflow, so there is no guarantee for correctness. I am happy for any bug reports, however it is unlikely that I will actively develop the package in the near future.
@@ -48,6 +55,8 @@ jm.plot_parameter_correlation(results, 'P_vs_K', 'p1')
 
 
 ## Example file of a joint RV and transit fit:
+A full (real) example jupyter-notebook for a joint RV and transit fit can be found in the [**example folder**](https://github.com/JonasKemmer/JulietMods/blob/master/examples/Joint_RV_and_transit_fit.ipynb),
+but it can basically look like:
 ```python
 import juliet
 import juliet_mods as jm
@@ -81,8 +90,12 @@ results = julobj.fit(
     )
 jm.append_lnZ(results)
 jm.get_lc_residuals(results)
+jm.get_rv_residuals(results)
 
+jm.plot_rv_indv_panels(results, show=True)
+jm.plot_phased_rvs(results, hide_uncertainty=False, show_binned=True, show=True)
 
+jm.plot_lc_indv_panels(results, show=True)
 for pnum in range(1, results.data.n_transiting_planets + 1):
     jm.plot_transit_overview(results,
                              minphase=-0.02,
@@ -92,14 +105,13 @@ for pnum in range(1, results.data.n_transiting_planets + 1):
                              pnum=pnum,
                              show=True,
                              nsamples=10000)
+
 for pnum in range(1, results.data.n_rv_planets + 1):
     jm.plot_corner(results, [f'_p{pnum}', 'rho'],
                     mark_values=None,
                     show=False)
 
-jm.get_rv_residuals(results)
-jm.plot_phased_rvs(results)
-jm.plot_rv(results)
+
 jm.plot_corner(results, 'GP')
 
 jm.create_planet_posterior_table(results)
