@@ -25,7 +25,8 @@ def _plot_instrument_(results, instrument, color, ax, res, jd_offset, nsamples,
     else:
         model_times = results.data.times_lc[instrument]
 
-    model_lc, _, _ = tp.get_lc_model(results, nsamples, instrument, model_times)
+    model_lc, model_components, _ = tp.get_lc_model(results, nsamples,
+                                                    instrument, model_times)
     try:
         lc_offset = np.median(
             results.posteriors['posterior_samples'][f'mflux_{instrument}'])
@@ -54,6 +55,15 @@ def _plot_instrument_(results, instrument, color, ax, res, jd_offset, nsamples,
     model_lc += lc_offset
 
     ax.plot(model_times - jd_offset, model_lc, color='black', zorder=5)
+    if any("GP" in param for param in results.model_parameters):
+        try:
+            model_gp = model_lc - model_components['lm'] - lc_offset
+            ax.plot(model_times - jd_offset, model_gp, color='#DBA039', lw=1.5)
+        except Exception as e:
+            print(e)
+        # except KeyError:
+        #     pass
+
     # Residual axis
     instr_lc, _, _ = tp.get_lc_model(results, nsamples, instrument,
                                      results.data.times_lc[instrument])
@@ -144,7 +154,6 @@ def plot_photometry_indv_panels(results,
         Saveformat passed to plt.savefig, by default 'pdf'
     """
     for instrument in sorted(list(results.data.data_lc.keys())):
-        print(instrument)
         fig, (ax, res) = plt.subplots(2,
                                       1,
                                       figsize=(7, 2),
