@@ -200,6 +200,14 @@ class Data(object):
             self.rvs[instr] = tab[mask]['yval'].values
             self.rvs_err[instr] = tab[mask]['yval_err'].values
             self.t_rvs[instr] = tab[mask]['times'].values + offset
+            linregs = []
+            for colname in tab:
+                if type(colname) == str:
+                    if 'linreg' in colname:
+                        linregs.append(colname)
+            if len(linregs) > 0:
+                self.linear_regressors_rv[f'{instr}'] = np.atleast_2d(
+                    tab[linregs].values)
         self.rv_instr = list(self.rvs.keys())
         if global_gp:
             self._global_gp_rvs = True
@@ -319,7 +327,7 @@ class PriorList(object):
                       np.array(row[2].split(','), dtype=np.float)))
         return PriorList(plist)
 
-    def read_posterior_as_prior(path, dist='fixed'):
+    def read_posterior_as_prior(path, dist='fixed', sigma_fact=3):
         """convenience function to read in the posterior from another fit
             as a prior. Prior distribution can be "fixed" or "normal", which
             uses a normal distribution around the median with a standard
@@ -333,7 +341,7 @@ class PriorList(object):
             if dist == 'fixed':
                 plist.append(Prior(row[0], 'fixed', row[1]))
             if dist == 'normal':
-                error = 3 * np.sqrt(row[2]**2 + row[3]**2)
+                error = sigma_fact * np.sqrt(row[2]**2 + row[3]**2)
                 sig_decimals = utils.get_significant_decimals(error)
                 plist.append(
                     Prior(
