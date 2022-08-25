@@ -17,7 +17,8 @@ sns.set(context='paper',
 
 
 def _plot_instrument_(results, instrument, color, ax, res, jd_offset, nsamples,
-                      show_binned, binlength, interpolate, samplingfreq):
+                      show_binned, binlength, interpolate, samplingfreq,
+                      show_lm):
     # Datapoints and model
     if interpolate is True:
         model_times = utils.sample_model_times(results, samplingfreq, 'LC',
@@ -45,8 +46,14 @@ def _plot_instrument_(results, instrument, color, ax, res, jd_offset, nsamples,
         alpha = 1
         edgecolor = 'black'
         color = color
+
+    if show_lm:
+        lm_correction = 0
+    else:
+        lm_correction = model_components['lm']
+
     ax.scatter(results.data.times_lc[instrument] - jd_offset,
-               results.data.data_lc[instrument] + lc_offset,
+               results.data.data_lc[instrument] + lc_offset - lm_correction,
                marker=marker,
                s=s,
                alpha=alpha,
@@ -54,11 +61,20 @@ def _plot_instrument_(results, instrument, color, ax, res, jd_offset, nsamples,
                color=color)
     model_lc += lc_offset
 
-    ax.plot(model_times - jd_offset, model_lc, color='black', zorder=5)
+    ax.plot(model_times - jd_offset,
+            model_lc - lm_correction,
+            color='black',
+            zorder=5)
     if any("GP" in param for param in results.model_parameters):
         try:
-            model_gp = model_lc - model_components['lm'] - lc_offset
+            model_gp = model_lc - model_components['lm']
             ax.plot(model_times - jd_offset, model_gp, color='#DBA039', lw=1.5)
+        except Exception as e:
+            print(e)
+    if show_lm:
+        try:
+            model_lm = 1 + model_components['lm'] + lc_offset
+            ax.plot(model_times - jd_offset, model_lm, color='#AD4332', lw=1.5)
         except Exception as e:
             print(e)
         # except KeyError:
@@ -84,8 +100,8 @@ def _plot_instrument_(results, instrument, color, ax, res, jd_offset, nsamples,
     for (upper, lower), color in zip(model_quantiles[::-1],
                                      ['grey', 'darkgrey', 'dimgrey']):
         ax.fill_between(model_times - jd_offset,
-                        lower,
-                        upper,
+                        lower - lm_correction,
+                        upper - lm_correction,
                         color=color,
                         zorder=0)
 
@@ -121,6 +137,7 @@ def plot_photometry_indv_panels(results,
                                 nsamples=1000,
                                 show_binned=False,
                                 binlength='10D',
+                                show_lm=False,
                                 show=False,
                                 saveformat='pdf'):
     """Similar to plot_lc_indv_panels but with the plot optimised for long-term
@@ -148,6 +165,10 @@ def plot_photometry_indv_panels(results,
         Errorbars are the standart deviation of the data bins, by default False
     binlength : str, optional
         Timespan for the data bins, by default '10D'
+    show_lm : bool, optional
+        If False, the linear model will be subtracted from the model before
+        plotting, else the linear model will be depicted in the plot, by default
+        False
     show : bool, optional
         Whether the plot is shown after the function call, by default False
     saveformat : str, optional
@@ -166,7 +187,7 @@ def plot_photometry_indv_panels(results,
 
         _plot_instrument_(results, instrument, '#0E9CA1', ax, res, jd_offset,
                           nsamples, show_binned, binlength, interpolate,
-                          samplingfreq)
+                          samplingfreq, show_lm)
 
         fig.tight_layout()
         fig.subplots_adjust(hspace=0)
