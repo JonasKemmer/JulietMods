@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from math import ceil, floor
 from copy import deepcopy
+import tkinter as tk
+from tkinter import ttk
 
 import numpy as np
 import pandas as pd
@@ -295,3 +297,18 @@ def append_lnZ(results):
             return
         posteriorfile.write(
             f'\n# dlogZ                {lnz:.3f} +/- {lnz_err:.3g}')
+
+
+def notification_pop_up(msg='Fit finished!', sound=True):
+    popup = tk.Tk()
+    popup.wm_title("!")
+    if sound:
+        popup.bell()
+    label = ttk.Label(
+        popup,
+        text=msg,
+    )
+    label.pack(side="top", fill="x", pady=10)
+    B1 = ttk.Button(popup, text="Okay", command=popup.destroy)
+    B1.pack()
+    popup.mainloop()
