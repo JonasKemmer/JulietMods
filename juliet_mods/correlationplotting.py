@@ -102,8 +102,8 @@ def plot_GPcorrelation(results,
             firstkey += '_rv'
             secondkey += '_rv'
         elif model.lower() == 'photometry':
-            firstkey += '_' + '_'.join(np.unique(results.data.instruments_lc))
-            secondkey += '_' + '_'.join(np.unique(results.data.instruments_lc))
+            firstkey += '_' + '_'.join(results.data.GP_lc_arguments.keys())
+            secondkey += '_' + '_'.join(results.data.GP_lc_arguments.keys())
         else:
             firstkey += f'_{model}'
             secondkey += f'_{model}'
