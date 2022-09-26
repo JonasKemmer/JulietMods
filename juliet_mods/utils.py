@@ -201,7 +201,7 @@ def bin_phased_data(phases, values, bin_length):
     return binned[['phases', 'values', 'errors']]
 
 
-def get_rv_residuals(results):
+def get_rv_residuals(results, nsamples=1000):
     """Function to calculate the RV residuals from a juliet fit and save them
        in a file.
 
@@ -229,6 +229,7 @@ def get_rv_residuals(results):
             t=results.data.times_rv[instrument],
             GPregressors=results.data.times_rv[instrument],
             LMregressors=lm_args,
+            nsamples=nsamples,
             return_components=True)
         residuals.append(
             pd.DataFrame(
@@ -247,7 +248,7 @@ def get_rv_residuals(results):
                      sep=' ')
 
 
-def get_lc_residuals(results):
+def get_lc_residuals(results, nsamples=1000):
     """Function to calculate the light curve residuals from a juliet fit and save them
        in a file.
 
@@ -273,6 +274,7 @@ def get_lc_residuals(results):
             instrument,
             t=results.data.times_lc[instrument],
             LMregressors=lm_args,
+            nsamples=nsamples,
             GPregressors=results.data.times_lc[instrument])
 
         residuals.append([
@@ -302,6 +304,8 @@ def append_lnZ(results):
 def notification_pop_up(msg='Fit finished!', sound=True):
     popup = tk.Tk()
     popup.wm_title("!")
+    popup.lift()
+    popup.attributes("-topmost", True)
     if sound:
         popup.bell()
     label = ttk.Label(
