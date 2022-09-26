@@ -49,7 +49,7 @@ def plot_GPcorrelation(results,
     correlation : str, optional
         The correlation which is plotted. Implemented are:
         ['alpha_vs_Prot', 'sigma_vs_rho', 'omega0_vs_Q', 'Q0_vs_period',
-         'dQ_vs_period'], by default 'alpha_vs_Prot'
+         'dQ_vs_period', 'rho_vs_tau'], by default 'alpha_vs_Prot'
     model : str, optional
         Whether the GP from RV or Photometry is plotted, by default 'RV'
     label_model : bool, optional
@@ -72,6 +72,7 @@ def plot_GPcorrelation(results,
         'omega0_vs_Q': ['GP_omega0', 'GP_Q', True, True],
         'Q0_vs_period': ['GP_period', 'GP_Q0', False, True],
         'dQ_vs_period': ['GP_period', 'GP_dQ', False, True],
+        'rho_vs_tau': ['GP_rho', 'GP_tau', False, True],
     }
     # dictionary with the name of a correlation and the x and y labels to plot
     labels = {
@@ -86,6 +87,10 @@ def plot_GPcorrelation(results,
         ],
         'dQ_vs_period': [
             r'$Period_\mathrm{GP}\,[\mathrm{d}]$', r'$dQ_\mathrm{GP}$'
+        ],
+        'rho_vs_tau': [
+            r'$Secondary Period_\mathrm{GP}\,[\mathrm{d}]$',
+            r'$\tau_\mathrm{GP}$'
         ]
     }
     try:
