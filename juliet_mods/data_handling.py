@@ -322,9 +322,16 @@ class PriorList(object):
         file = pd.read_table(path, sep='\s+', header=None, comment='#')
         plist = []
         for _, row in file.iterrows():
-            plist.append(
-                Prior(row[0], row[1].lower(),
-                      np.array(row[2].split(','), dtype=np.float)))
+            try:
+                plist.append(
+                    Prior(row[0], row[1].lower(),
+                          np.array(row[2].split(','), dtype=np.float)))
+            except ValueError:
+                plist.append(
+                    Prior(
+                        row[0], row[1].lower(),
+                        np.array(row[2].replace('[', '').replace(']', ''),
+                                 dtype=np.float)))
         return PriorList(plist)
 
     def read_posterior_as_prior(path, dist='fixed', sigma_fact=3):
