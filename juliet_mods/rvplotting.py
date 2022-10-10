@@ -14,7 +14,11 @@ __author__ = "Jonas Kemmer @ ZAH, Landessternwarte Heidelberg"
 sns.set(context='paper',
         font_scale=0.9,
         style='ticks',
-        rc={"lines.linewidth": 1})
+        rc={
+            "lines.linewidth": 1,
+            "xtick.minor.visible": True,
+            "ytick.minor.visible": True
+        })
 
 colors = [
     '#AD4332',
@@ -499,7 +503,6 @@ def plot_rv_indv_panels(results,
         res.set_xlabel(f'BJD -{jd_offset}')
         res.set_ylabel('(O-C)')
         res.axhline(0, ls='--', color='grey')
-        ax.minorticks_on()
         # res.set_xlim(min_t - jd_offset, max_t - jd_offset)
         ax.set_ylabel('RV [m/s]')
 

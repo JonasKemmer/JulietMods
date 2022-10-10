@@ -13,13 +13,21 @@ __author__ = "Jonas Kemmer @ ZAH, Landessternwarte Heidelberg"
 sns.set(context='paper',
         font_scale=0.9,
         style='ticks',
-        rc={"lines.linewidth": 1})
+        rc={
+            "lines.linewidth": 1,
+            "xtick.minor.visible": True,
+            "ytick.minor.visible": True
+        })
 
 
 def _plot_instrument_(results, instrument, color, ax, res, jd_offset, nsamples,
                       show_binned, binlength, interpolate, samplingfreq,
                       show_lm):
     # Datapoints and model
+    if instrument in results.data.lm_lc_arguments:
+        print('Linear Model detected, setting interpolate to "False"')
+        interpolate = False
+
     if interpolate is True:
         model_times = utils.sample_model_times(results, samplingfreq, 'LC',
                                                instrument)
@@ -47,7 +55,7 @@ def _plot_instrument_(results, instrument, color, ax, res, jd_offset, nsamples,
         edgecolor = 'black'
         color = color
 
-    if show_lm:
+    if show_lm or interpolate == True:
         lm_correction = 0
     else:
         lm_correction = model_components['lm']
@@ -269,7 +277,6 @@ def plot_photometry_with_shared_parameters(results,
                                                unit='D'),
                                 freq=samplingfreq)
     model_times = model_times.to_julian_date().values
-
     resultsdummy = deepcopy(results)
     model_lc = resultsdummy.lc.evaluate(instruments[0],
                                         t=model_times,
