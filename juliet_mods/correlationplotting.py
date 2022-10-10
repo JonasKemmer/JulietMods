@@ -11,7 +11,11 @@ __author__ = "Jonas Kemmer @ ZAH, Landessternwarte Heidelberg"
 sns.set(context='paper',
         font_scale=0.9,
         style='ticks',
-        rc={"lines.linewidth": 1})
+        rc={
+            "lines.linewidth": 1,
+            "xtick.minor.visible": True,
+            "ytick.minor.visible": True
+        })
 
 
 def plot_loghist(ax, values, orientation):
