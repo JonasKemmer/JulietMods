@@ -27,19 +27,9 @@ def find_data_chunks(times, gaplength='0.33Y'):
     return gaps.cumsum().values
 
 
-def _plot_instrument_(results,
-                      instrument,
-                      color,
-                      ax,
-                      res,
-                      jd_offset,
-                      nsamples,
-                      show_binned,
-                      binlength,
-                      interpolate,
-                      samplingfreq,
-                      max_gap='0.3Y',
-                      show_lm):
+def _plot_instrument_(results, instrument, color, ax, res, jd_offset, nsamples,
+                      show_binned, binlength, interpolate, samplingfreq,
+                      max_gap, show_lm):
     # Datapoints and model
     if instrument in results.data.lm_lc_arguments:
         print('Linear Model detected, setting interpolate to "False"')
