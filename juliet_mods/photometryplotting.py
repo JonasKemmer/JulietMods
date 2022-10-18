@@ -20,8 +20,25 @@ sns.set(context='paper',
         })
 
 
-def _plot_instrument_(results, instrument, color, ax, res, jd_offset, nsamples,
-                      show_binned, binlength, interpolate, samplingfreq,
+def find_data_chunks(times, gaplength='0.33Y'):
+    deltas = pd.to_datetime(pd.Series(times), origin='julian',
+                            unit='D').diff()[1:]
+    gaps = deltas > pd.Timedelta(gaplength)
+    return gaps.cumsum().values
+
+
+def _plot_instrument_(results,
+                      instrument,
+                      color,
+                      ax,
+                      res,
+                      jd_offset,
+                      nsamples,
+                      show_binned,
+                      binlength,
+                      interpolate,
+                      samplingfreq,
+                      max_gap='0.3Y',
                       show_lm):
     # Datapoints and model
     if instrument in results.data.lm_lc_arguments:
@@ -69,16 +86,30 @@ def _plot_instrument_(results, instrument, color, ax, res, jd_offset, nsamples,
                color=color)
     model_lc += lc_offset
 
-    ax.plot(model_times - jd_offset,
-            model_lc - lm_correction,
-            color='black',
-            zorder=5)
-    if any("GP" in param for param in results.model_parameters):
-        try:
-            model_gp = model_lc - model_components['lm']
-            ax.plot(model_times - jd_offset, model_gp, color='#DBA039', lw=1.5)
-        except Exception as e:
-            print(e)
+    if interpolate:
+        ax.plot(model_times - jd_offset,
+                model_lc - lm_correction,
+                color='black',
+                zorder=5)
+    else:
+        gaps = find_data_chunks(model_times)
+        for idx in range(max(gaps) + 1):
+            mask = gaps == idx
+            if idx == 0:
+                mask = np.insert(mask, 0, True)
+            else:
+                mask = np.insert(mask, 0, False)
+            ax.plot(model_times[mask] - jd_offset,
+                    model_lc[mask] - lm_correction[mask],
+                    color='black',
+                    zorder=5)
+
+    # if any("GP" in param for param in results.model_parameters):
+    #     try:
+    #         model_gp = model_lc - model_components['lm']
+    #         ax.plot(model_times - jd_offset, model_gp, color='#DBA039', lw=1.5)
+    #     except Exception as e:
+    #         print(e)
     if show_lm:
         try:
             model_lm = 1 + model_components['lm'] + lc_offset
@@ -107,11 +138,24 @@ def _plot_instrument_(results, instrument, color, ax, res, jd_offset, nsamples,
     model_quantiles += lc_offset
     for (upper, lower), color in zip(model_quantiles[::-1],
                                      ['grey', 'darkgrey', 'dimgrey']):
-        ax.fill_between(model_times - jd_offset,
-                        lower - lm_correction,
-                        upper - lm_correction,
-                        color=color,
-                        zorder=0)
+        if interpolate:
+            ax.fill_between(model_times - jd_offset,
+                            lower - lm_correction,
+                            upper - lm_correction,
+                            color=color,
+                            zorder=0)
+        else:
+            for idx in range(max(gaps) + 1):
+                mask = gaps == idx
+                if idx == 0:
+                    mask = np.insert(mask, 0, True)
+                else:
+                    mask = np.insert(mask, 0, False)
+                ax.fill_between(model_times[mask] - jd_offset,
+                                lower[mask] - lm_correction[mask],
+                                upper[mask] - lm_correction[mask],
+                                color=color,
+                                zorder=0)
 
     if show_binned:
         binned_data = utils.bin_data(results.data.times_lc[instrument],
@@ -142,6 +186,7 @@ def plot_photometry_indv_panels(results,
                                 jd_offset=2457000,
                                 interpolate=False,
                                 samplingfreq='0.5D',
+                                max_gap='0.3Y',
                                 nsamples=1000,
                                 show_binned=False,
                                 binlength='10D',
@@ -162,6 +207,9 @@ def plot_photometry_indv_panels(results,
         sampling, by default False
     samplingfreq : str, optional
         Samplingfrequency of the model, by default '0.5D' = 0.5 days
+    max_gap : str, optional
+        Points between data gaps larger than the given value will not be
+        connected (if interpolate is False).
     nsamples : int, optional
         Number of models which are drawn from the posterior to derive
         the confidence intervals, by default 1000
@@ -195,7 +243,7 @@ def plot_photometry_indv_panels(results,
 
         _plot_instrument_(results, instrument, '#0E9CA1', ax, res, jd_offset,
                           nsamples, show_binned, binlength, interpolate,
-                          samplingfreq, show_lm)
+                          samplingfreq, max_gap, show_lm)
 
         fig.tight_layout()
         fig.subplots_adjust(hspace=0)
