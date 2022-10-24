@@ -112,7 +112,8 @@ def plot_rv(results,
             show=False,
             saveformat='pdf'):
     """Plots a broad RV curve of all data and the best model.
-    CAUTION if a non-global GP model is used: The plotted model corresponds to the instrument whose initial letter appears first in the alphabet.
+    CAUTION if a non-global GP model is used: The plotted model corresponds
+    to the instrument whose initial letter appears first in the alphabet.
 
 
     Parameters
@@ -171,10 +172,12 @@ def plot_rv(results,
             zorder=5)
     if 'GP' in components_results.rv.model:
         model_gp = components_results.rv.model['GP'] - rv_offset
-        ax.plot(model_times - jd_offset,
-                model_gp + rv_offset,
-                color='#DBA039',
-                lw=1.5)
+        ax.plot(
+            model_times - jd_offset,
+            model_gp + rv_offset,
+            color='#DBA039',
+            # lw=1.5,
+            zorder=6)
 
     # Plot uncertainty
     for (upper, lower), color in zip(model_quantiles[::-1],
@@ -216,7 +219,7 @@ def plot_rv(results,
                     fmt='o',
                     color=color,
                     markeredgecolor='black',
-                    zorder=5)
+                    zorder=7)
 
         instr_model, _, _ = get_rv_model(results, nsamples, instrument,
                                          results.data.times_rv[instrument])
@@ -228,7 +231,7 @@ def plot_rv(results,
                      fmt='o',
                      color=color,
                      markeredgecolor='black',
-                     zorder=5)
+                     zorder=7)
     ax.set_ylim(-3 * np.std(results.data.y_rv), 3 * np.std(results.data.y_rv))
     # np.mean(results.data.y_rv) - 3 * np.std(results.data.y_rv),
     # np.mean(results.data.y_rv) + 3 * np.std(results.data.y_rv))
@@ -375,12 +378,26 @@ def plot_phased_rvs(results,
                        markeredgewidth=1,
                        markeredgecolor='black',
                        markersize=10))
-            model_rv, components = results.rv.evaluate(
-                instrument,
-                t=results.data.times_rv[instrument],
-                GPregressors=results.data.times_rv[instrument],
-                return_components=True)
-            model_other_p = model_rv - components[f'p{pnum}']
+
+            if results.rv.global_model:
+                model_rv, components = results.rv.evaluate(
+                    instrument,
+                    t=results.data.t_rv,
+                    GPregressors=results.data.GP_rv_arguments['rv'],
+                    return_components=True)
+                model_other_p = model_rv - components[f'p{pnum}']
+                mask = np.isin(results.data.t_rv,
+                               results.data.times_rv[instrument])
+                model_other_p = model_other_p[mask]
+                model_rv = model_rv[mask]
+            else:
+                model_rv, components = results.rv.evaluate(
+                    instrument,
+                    t=results.data.times_rv[instrument],
+                    GPregressors=results.data.times_rv[instrument],
+                    return_components=True)
+                model_other_p = model_rv - components[f'p{pnum}']
+
             data_phases = juliet.get_phases(results.data.times_rv[instrument],
                                             P, t0)
             try:
