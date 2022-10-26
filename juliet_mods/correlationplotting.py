@@ -146,7 +146,6 @@ def plot_GPcorrelation(results,
     ax.scatter(df.xval[df.loglike < maxloglike - 10],
                df.yval[df.loglike < maxloglike - 10],
                s=10,
-               rasterized=True,
                color="grey")
 
     inner = ax.scatter(df.xval[df.loglike > maxloglike - 10],
@@ -155,8 +154,7 @@ def plot_GPcorrelation(results,
                        c=df.loglike[df.loglike > maxloglike - 10],
                        cmap=plt.get_cmap(colormap),
                        vmin=maxloglike - 10,
-                       vmax=maxloglike,
-                       rasterized=True)
+                       vmax=maxloglike)
     if logx:
         ax_histx = plot_loghist(ax_histx, df.xval, 'vertical')
         ax.set_xscale('log')
@@ -293,7 +291,6 @@ def plot_corner(results,
     plt.savefig(Path(results.data.out_folder,
                      f'cornerplot{subset}.{saveformat}'),
                 bbox_inches='tight',
-                rasterized=True,
                 dpi=400)
     if show:
         plt.show()
@@ -384,7 +381,6 @@ def plot_parameter_correlation(results,
     ax.scatter(df.xval[df.loglike < maxloglike - 10],
                df.yval[df.loglike < maxloglike - 10],
                s=10,
-               rasterized=True,
                color="grey")
 
     inner = ax.scatter(df.xval[df.loglike > maxloglike - 10],
@@ -393,8 +389,7 @@ def plot_parameter_correlation(results,
                        c=df.loglike[df.loglike > maxloglike - 10],
                        cmap=plt.get_cmap(colormap),
                        vmin=maxloglike - 10,
-                       vmax=maxloglike,
-                       rasterized=True)
+                       vmax=maxloglike)
     if logx:
         ax_histx = plot_loghist(ax_histx, df.xval, 'vertical')
         ax.set_xscale('log')
