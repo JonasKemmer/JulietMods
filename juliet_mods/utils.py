@@ -301,6 +301,18 @@ def append_lnZ(results):
             f'\n# dlogZ                {lnz:.3f} +/- {lnz_err:.3g}')
 
 
+def append_BIC(results):
+    n_rv_data = 0 if results.data.t_rv is None else len(results.data.t_rv)
+    n_lc_data = 0 if results.data.t_lc is None else len(results.data.t_lc)
+    BIC = -2 * np.max(results.posteriors['posterior_samples']['loglike']) + len(
+        results.paramnames) * (n_rv_data + n_lc_data)
+    with open(f'{results.data.out_folder}/posteriors.dat',
+              "r+") as posteriorfile:
+        if "BIC" in posteriorfile.read():
+            return
+        posteriorfile.write(f'\n# BIC                  {BIC:.3f}')
+
+
 def notification_pop_up(msg='Fit finished!', sound=True):
     popup = tk.Tk()
     popup.wm_title("!")
