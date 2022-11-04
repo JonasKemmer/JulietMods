@@ -205,6 +205,7 @@ def plot_GPcorrelation(results,
         name_post_script = '_vs_'.join(model)
     else:
         name_post_script = model
+    ax.set_rasterization_zorder(2)
     fig.savefig(Path(results.data.out_folder,
                      f'GP-{correlation}_{name_post_script}.{saveformat}'),
                 bbox_inches='tight',
