@@ -277,6 +277,8 @@ def plot_phased_rvs(results,
     nsamples : int, optional
         Number of models which are drawn from the posterior to derive
         the confidence intervals, by default 1000
+    hide_uncertainty: bool, optional
+        If true, no confidence interval will be plotted, by default False
     only_planet_uncertainty : bool, optional
         If True, the uncertainties will be derived only from the individual
         planet components, ignoring the overall model uncertainties,
