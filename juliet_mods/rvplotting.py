@@ -559,7 +559,8 @@ def plot_rv_indv_panels(results,
                 ax.plot(model_times - jd_offset,
                         model_gp,
                         color='#DBA039',
-                        lw=1.5)
+                        lw=1.5,
+                        zorder=6)
             except KeyError:
                 pass
 
