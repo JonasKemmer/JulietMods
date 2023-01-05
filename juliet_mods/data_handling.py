@@ -290,6 +290,16 @@ class PriorList(object):
             self.add(prior)
         self.num_pl = self._count_planets_()
 
+    def get(self, pparam, as_Prior=False):
+        plist = [
+            pparam, self.priordict[pparam]['distribution'],
+            self.priordict[pparam]['hyperparameters']
+        ]
+        if as_Prior:
+            return Prior(plist)
+        else:
+            return plist
+
     def add(self, prior):
         """Function to add a prior to the list. Needs a Prior object as input."""
         self.priordict[prior.pparam] = {}
