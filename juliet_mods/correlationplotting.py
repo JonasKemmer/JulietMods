@@ -28,6 +28,7 @@ def plot_loghist(ax, values, orientation):
     )
     ax.hist(values,
             bins=logbins,
+            density=True,
             orientation=orientation,
             log=False,
             edgecolor='black',
@@ -162,6 +163,7 @@ def plot_GPcorrelation(results,
     else:
         ax_histx.hist(df.xval,
                       bins=40,
+                      density=True,
                       histtype='bar',
                       edgecolor='black',
                       facecolor='none')
