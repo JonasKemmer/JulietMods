@@ -20,19 +20,23 @@ sns.set(context='paper',
 
 def plot_loghist(ax, values, orientation):
     """Function to draw a log histogram given an figure axes and values."""
+    dummyfig = plt.figure()
     hist, bins, _ = plt.hist(values, bins=40)
     logbins = np.logspace(
         np.log10(bins[0]),
         np.log10(bins[-1]),
         len(bins),
     )
+    plt.close(dummyfig)
     ax.hist(values,
             bins=logbins,
             density=True,
             orientation=orientation,
             log=False,
             edgecolor='black',
-            facecolor='none')
+            facecolor='none',
+            align='mid')
+    print('test')
     return ax
 
 
@@ -73,6 +77,8 @@ def plot_GPcorrelation(results,
     # ["param1", "param2", logx, logy],
     correlations = {
         'alpha_vs_Prot': ['GP_Prot', 'GP_alpha', False, True],
+        'alpha1_vs_Prot1': ['GP_Prot1', 'GP_alpha1', False, True],
+        'alpha2_vs_Prot2': ['GP_Prot2', 'GP_alpha2', False, True],
         'sigma_vs_rho': ['GP_sigma', 'GP_rho', True, True],
         'omega0_vs_Q': ['GP_omega0', 'GP_Q', True, True],
         'Q0_vs_period': ['GP_period', 'GP_Q0', False, True],
@@ -82,6 +88,14 @@ def plot_GPcorrelation(results,
     # dictionary with the name of a correlation and the x and y labels to plot
     labels = {
         'alpha_vs_Prot': [
+            r'$P_\mathrm{rot;GP}\,[\mathrm{d}]$',
+            r'$\alpha_\mathrm{GP}\,[\mathrm{d}^{-2}]$'
+        ],
+        'alpha1_vs_Prot1': [
+            r'$P_\mathrm{rot;GP}\,[\mathrm{d}]$',
+            r'$\alpha_\mathrm{GP}\,[\mathrm{d}^{-2}]$'
+        ],
+        'alpha2_vs_Prot2': [
             r'$P_\mathrm{rot;GP}\,[\mathrm{d}]$',
             r'$\alpha_\mathrm{GP}\,[\mathrm{d}^{-2}]$'
         ],
@@ -178,8 +192,8 @@ def plot_GPcorrelation(results,
                       orientation='horizontal',
                       edgecolor='black',
                       facecolor='none')
-    ax.set_ylim(df.yval.min(), df.yval.max())
-    ax.set_xlim(df.xval.min(), df.xval.max())
+    ax.margins(0.02)
+    ax.autoscale()
     xlabel, ylabel = labels[correlation]
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
