@@ -36,7 +36,6 @@ def plot_loghist(ax, values, orientation):
             edgecolor='black',
             facecolor='none',
             align='mid')
-    print('test')
     return ax
 
 
