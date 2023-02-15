@@ -160,7 +160,7 @@ def plot_rv(results,
                                   figsize=(7, 2),
                                   sharex=True,
                                   gridspec_kw={'height_ratios': [3, 1]})
-    res.set_xlabel(f'BJD -{jd_offset}')
+    res.set_xlabel(f'BJD $-$ {jd_offset}')
     res.set_ylabel('(O-C) [m/s]')
     res.axhline(0, ls='--', color='grey')
     ax.set_ylabel('RV [m/s]')
@@ -519,7 +519,7 @@ def plot_rv_indv_panels(results,
                                       figsize=(7, 2),
                                       sharex=True,
                                       gridspec_kw={'height_ratios': [3, 1]})
-        res.set_xlabel(f'BJD -{jd_offset}')
+        res.set_xlabel(f'BJD $-$ {jd_offset}')
         res.set_ylabel('(O-C)')
         res.axhline(0, ls='--', color='grey')
         # res.set_xlim(min_t - jd_offset, max_t - jd_offset)

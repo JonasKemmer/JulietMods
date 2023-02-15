@@ -141,7 +141,7 @@ def plot_lc_indv_panels(results,
                                       figsize=(7, 2),
                                       sharex=True,
                                       gridspec_kw={'height_ratios': [3, 1]})
-        res.set_xlabel(f'BJD -{jd_offset}')
+        res.set_xlabel(f'BJD $-$ {jd_offset}')
         res.set_ylabel('(O-C)')
         res.axhline(0, ls='--', color='grey')
         ax.set_ylabel('Relative flux')
