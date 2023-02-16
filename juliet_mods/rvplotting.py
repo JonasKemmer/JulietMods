@@ -20,14 +20,14 @@ sns.set(context='paper',
             "ytick.minor.visible": True
         })
 
-colors = [
-    '#AD4332',
-    '#2d9a9a',
-    '#DBA039',
-    '#2C6A99',
-    '#7f2d9a',
-    '#394F82',
-    '#0E9CA1',
+colors_and_markers = [
+    ['#AD4332', 'o'],
+    ['#2d9a9a', 's'],
+    ['#DBA039', 'v'],
+    ['#2C6A99', 'P'],
+    ['#7f2d9a', 'D'],
+    ['#394F82', 'p'],
+    ['#0E9CA1', 'H'],
 ]
 
 
@@ -136,10 +136,15 @@ def plot_rv(results,
         Saveformat passed to plt.savefig, by default 'pdf'
 
     """
-    global colors
+    global colors_and_markers
     instruments = sorted(list(results.data.data_rv.keys()))
-    if len(instruments) > len(colors):
-        colors = sns.color_palette("husl", len(instruments))
+    if len(instruments) > len(colors_and_markers):
+        print('Number of instruments lager than predefined colours.'
+              ' Switching to default colours.')
+        colors_and_markers = np.array([
+            sns.color_palette("husl", len(instruments)),
+            np.repeat('o', len(instruments))
+        ]).T
     model_times = utils.sample_model_times(results, samplingfreq, 'RV')
 
     model_rv, components, components_results = get_rv_model(
@@ -189,12 +194,12 @@ def plot_rv(results,
                         zorder=0)
 
     legend_elements = []
-    for instrument, color in zip(instruments, colors):
+    for instrument, [color, marker] in zip(instruments, colors_and_markers):
         legend_elements.append(
             Line2D([0], [0],
-                   marker='o',
                    color='w',
                    label=instrument,
+                   marker=marker,
                    markerfacecolor=color,
                    markeredgewidth=1,
                    markeredgecolor='black',
@@ -217,6 +222,7 @@ def plot_rv(results,
                     yerr=np.sqrt(results.data.errors_rv[instrument]**2 +
                                  jitter**2),
                     fmt='o',
+                    marker=marker,
                     color=color,
                     markeredgecolor='black',
                     zorder=7)
@@ -229,6 +235,7 @@ def plot_rv(results,
                      yerr=np.sqrt(results.data.errors_rv[instrument]**2 +
                                   jitter**2),
                      fmt='o',
+                     marker=marker,
                      color=color,
                      markeredgecolor='black',
                      zorder=7)
@@ -295,7 +302,7 @@ def plot_phased_rvs(results,
     saveformat : str, optional
         Saveformat passed to plt.savefig, by default 'pdf'
     """
-    global colors
+    global colors_and_markers
     instruments = sorted(list(results.data.data_rv.keys()))
     if show_binned:
         marker = '.'
@@ -370,12 +377,12 @@ def plot_phased_rvs(results,
                                 color=color,
                                 zorder=0)
         legend_elements = []
-        for instrument, color in zip(instruments, colors):
+        for instrument, [color, marker] in zip(instruments, colors_and_markers):
             legend_elements.append(
                 Line2D([0], [0],
-                       marker='o',
                        color='w',
                        label=instrument,
+                       marker=marker,
                        markerfacecolor=color,
                        markeredgewidth=1,
                        markeredgecolor='black',
@@ -417,7 +424,8 @@ def plot_phased_rvs(results,
                         results.data.data_rv[instrument] - model_other_p,
                         yerr=np.sqrt(results.data.errors_rv[instrument]**2 +
                                      jitter**2),
-                        fmt=marker,
+                        fmt='o',
+                        marker=marker,
                         color=color,
                         alpha=alpha,
                         markeredgecolor=edgecolor,
@@ -426,7 +434,8 @@ def plot_phased_rvs(results,
                          results.data.data_rv[instrument] - model_rv,
                          yerr=np.sqrt(results.data.errors_rv[instrument]**2 +
                                       jitter**2),
-                         fmt=marker,
+                         fmt='o',
+                         marker=marker,
                          color=color,
                          alpha=alpha,
                          markeredgecolor=edgecolor,
@@ -508,12 +517,12 @@ def plot_rv_indv_panels(results,
     saveformat : str, optional
         Saveformat passed to plt.savefig, by default 'pdf'
     """
-    global colors
+    global colors_and_markers
     instruments = sorted(list(results.data.data_rv.keys()))
-    if len(instruments) > len(colors):
+    if len(instruments) > len(colors_and_markers):
         colors = sns.color_palette("husl", len(instruments))
 
-    for instrument, color in zip(instruments, colors):
+    for instrument, [color, marker] in zip(instruments, colors_and_markers):
         fig, (ax, res) = plt.subplots(2,
                                       1,
                                       figsize=(7, 2),
@@ -546,6 +555,7 @@ def plot_rv_indv_panels(results,
                     yerr=np.sqrt(results.data.errors_rv[instrument]**2 +
                                  jitter**2),
                     fmt='o',
+                    marker=marker,
                     color=color,
                     markeredgecolor='black',
                     zorder=5)
@@ -572,6 +582,7 @@ def plot_rv_indv_panels(results,
                      yerr=np.sqrt(results.data.errors_rv[instrument]**2 +
                                   jitter**2),
                      fmt='o',
+                     marker=marker,
                      color=color,
                      markeredgecolor='black',
                      zorder=5)
